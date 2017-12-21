@@ -1,0 +1,304 @@
+package experiment;
+
+
+import runtest.CFMaxTest;
+import runtest.newtest;
+import runtest.otherTest;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+
+
+/**
+ * Created by lenovo on 2017/7/21.
+ */
+public class experiment {
+    public String inputdir = "./inputDir/";
+    public String processordir = "/ProcessorFile/";
+    public String outputdir = "./outputDir/";
+
+    public void MontageTest(int taskNums, int priceModel) throws IOException {
+        double beta = 0.36;
+        String DAGmodel = "Montage";
+        String inputDAG = inputdir + DAGmodel + "/" + DAGmodel + "_" + taskNums;
+        String inputGraphPath = inputDAG + "_" + (taskNums + 2) + ".txt";
+
+        ArrayList<Double> maxTimeParatemerArray = new ArrayList<>();
+        //maxTimeParatemerArray.add(0.9);
+        //maxTimeParatemerArray.add(1.1);
+      //  maxTimeParatemerArray.add(1.3);
+        maxTimeParatemerArray.add(1.5);
+       // maxTimeParatemerArray.add(1.6);
+       // maxTimeParatemerArray.add(1.7);
+        //maxTimeParatemerArray.add(1.8);
+        maxTimeParatemerArray.add(2.0);
+       // maxTimeParatemerArray.add(2.3);
+        maxTimeParatemerArray.add(2.5);
+       // maxTimeParatemerArray.add(2.8);
+        maxTimeParatemerArray.add(3.0);
+       // maxTimeParatemerArray.add(3.3);
+        maxTimeParatemerArray.add(3.5);
+        maxTimeParatemerArray.add(4.0);
+        maxTimeParatemerArray.add(4.5);
+        maxTimeParatemerArray.add(5.0);
+        maxTimeParatemerArray.add(6.0);
+        maxTimeParatemerArray.add(8.0);
+        maxTimeParatemerArray.add(10.0);
+
+        String Path = outputdir + DAGmodel + "/" + DAGmodel + taskNums + "_CFMAX_" + priceModel + ".txt";
+        File File = new File(Path);
+        PrintWriter PWcfmax = new PrintWriter(File, "utf-8");
+        PWcfmax.write("HEFTmakespan:\tHEFTsumcost:\tmaxTime:\tCFMAXtestmakespan:\tCFMAXsumcost:\tMaxTimeParameter:\t\n");
+
+        String dmPath = outputdir + DAGmodel + "/" + DAGmodel + taskNums + "_DM_" + priceModel + ".txt";
+        File dmFile = new File(dmPath);
+        PrintWriter PWdm = new PrintWriter(dmFile, "utf-8");
+        PWdm.write("HEFTmakespan:\tHEFTsumcost:\tmaxTime:\tDMtestmakespan:\tDMsumcost:\tMaxTimeParameter:\t\n");
+
+        String EMPath = outputdir + DAGmodel + "/" + DAGmodel + taskNums + "_EM_" + priceModel + ".txt";
+        File emFile = new File(EMPath);
+        PrintWriter PWem = new PrintWriter(emFile, "utf-8");
+        PWem.write("HEFTmakespan:\tHEFTsumcost:\tmaxTime:\tEMetricmakespan:\tEMetricsumcost:\tMaxTimeParameter:\t\n");
+
+        String OtherPath = outputdir + DAGmodel + "/" + DAGmodel + taskNums + "_ThirdMetric_" + priceModel + ".txt";
+        File File3th = new File(OtherPath);
+        PrintWriter PW3th = new PrintWriter(File3th, "utf-8");
+        PW3th.write("HEFTmakespan:\tHEFTsumcost:\tmaxTime:\tOthermakespan:\tOthersumcost:\tMaxTimeParameter:\t\n");
+
+        for (int processorNum = 5; processorNum < 40; processorNum += 5) {
+            for (Double maxTimeParameter : maxTimeParatemerArray) {
+                String computationCostPath = inputDAG + "_" + processorNum + ".txt";//閸氬嫪鎹㈤崝鈥虫躬CPU閺堬拷妤傛﹢顣堕悳鍥︾瑓閻ㄥ嫯绻嶇悰灞炬闂傦拷
+                String processorInfor = inputdir + processordir + processorNum + ".txt";//CPU娣団剝浼�
+                CFMaxTest.runHEFT(maxTimeParameter, processorNum, (taskNums + 2),
+                        beta, computationCostPath, inputGraphPath, processorInfor, PWcfmax, priceModel);
+            /*    newtest.runHEFT(maxTimeParameter, processorNum, (taskNums + 2),
+                        beta, computationCostPath, inputGraphPath, processorInfor, PWdm, priceModel, false);
+                newtest.runHEFT(maxTimeParameter, processorNum, (taskNums + 2),
+                        beta, computationCostPath, inputGraphPath, processorInfor, PWem, priceModel, true);*/
+                otherTest.runHEFT(maxTimeParameter, processorNum, (taskNums + 2),
+                        beta, computationCostPath, inputGraphPath, processorInfor, PW3th, priceModel);
+
+            }
+        }
+
+
+    }
+
+    public void SiphtTest(int taskNums, int priceModel) throws IOException {
+        double beta = 0.8;
+        String DAGmodel = "Sipht";
+        String inputDAG = inputdir + DAGmodel + "/" + DAGmodel + "_" + taskNums;
+        String inputGraphPath = inputDAG + "_" + (taskNums + 2) + ".txt";
+       // System.out.println(inputGraphPath);
+
+        ArrayList<Double> maxTimeParatemerArray = new ArrayList<>();
+        //maxTimeParatemerArray.add(0.9);
+        //maxTimeParatemerArray.add(1.1);
+        maxTimeParatemerArray.add(1.3);
+        maxTimeParatemerArray.add(1.5);
+        maxTimeParatemerArray.add(1.6);
+        maxTimeParatemerArray.add(1.7);
+        maxTimeParatemerArray.add(1.8);
+        maxTimeParatemerArray.add(2.0);
+        maxTimeParatemerArray.add(2.3);
+        maxTimeParatemerArray.add(2.5);
+        maxTimeParatemerArray.add(2.8);
+        maxTimeParatemerArray.add(3.0);
+        maxTimeParatemerArray.add(3.3);
+        maxTimeParatemerArray.add(3.5);
+        maxTimeParatemerArray.add(5.0);
+
+        String Path = outputdir + DAGmodel + "/" + DAGmodel + taskNums + "_CFMAX_" + priceModel + ".txt";
+        File File = new File(Path);
+        PrintWriter PWcfmax = new PrintWriter(File, "utf-8");
+        PWcfmax.write("HEFTmakespan:\tHEFTsumcost:\tmaxTime:\tCFMAXtestmakespan:\tCFMAXsumcost:\tMaxTimeParameter:\t\n");
+
+        String dmPath = outputdir + DAGmodel + "/" + DAGmodel + taskNums + "_DM_" + priceModel + ".txt";
+        File dmFile = new File(dmPath);
+        PrintWriter PWdm = new PrintWriter(dmFile, "utf-8");
+        PWdm.write("HEFTmakespan:\tHEFTsumcost:\tmaxTime:\tDMtestmakespan:\tDMsumcost:\tMaxTimeParameter:\t\n");
+
+        String EMPath = outputdir + DAGmodel + "/" + DAGmodel + taskNums + "_EM_" + priceModel + ".txt";
+        File emFile = new File(EMPath);
+        PrintWriter PWem = new PrintWriter(emFile, "utf-8");
+        PWem.write("HEFTmakespan:\tHEFTsumcost:\tmaxTime:\tEMetricmakespan:\tEMetricsumcost:\tMaxTimeParameter:\t\n");
+
+        String OtherPath = outputdir + DAGmodel + "/" + DAGmodel + taskNums + "_ThirdMetric_" + priceModel + ".txt";
+        File File3th = new File(OtherPath);
+        PrintWriter PW3th = new PrintWriter(File3th, "utf-8");
+        PW3th.write("HEFTmakespan:\tHEFTsumcost:\tmaxTime:\tOthermakespan:\tOthersumcost:\tMaxTimeParameter:\t\n");
+
+        for (int processorNum = 5; processorNum < 40; processorNum += 5) {
+            for (Double maxTimeParameter : maxTimeParatemerArray) {
+                String computationCostPath = inputDAG + "_" + processorNum + ".txt";//
+                String processorInfor = inputdir + processordir + processorNum + ".txt";//
+                CFMaxTest.runHEFT(maxTimeParameter, processorNum, (taskNums + 2),
+                        beta, computationCostPath, inputGraphPath, processorInfor, PWcfmax, priceModel);
+              /*  newtest.runHEFT(maxTimeParameter, processorNum, (taskNums + 2),
+                        beta, computationCostPath, inputGraphPath, processorInfor, PWdm, priceModel, false);
+                newtest.runHEFT(maxTimeParameter, processorNum, (taskNums + 2),
+                        beta, computationCostPath, inputGraphPath, processorInfor, PWem, priceModel, true);*/
+                otherTest.runHEFT(maxTimeParameter, processorNum, (taskNums + 2),
+                        beta, computationCostPath, inputGraphPath, processorInfor, PW3th, priceModel);
+            }
+        }
+    }
+
+    public void Inspiral(int taskNums, int priceModel) throws IOException {
+        double beta = 0.38;
+        String DAGmodel = "Montage";
+        String inputDAG = inputdir + DAGmodel + "/" + DAGmodel + "_" + taskNums;
+        String inputGraphPath = inputDAG + "_" + (taskNums + 2) + ".txt";
+
+        ArrayList<Double> maxTimeParatemerArray = new ArrayList<>();
+      //maxTimeParatemerArray.add(0.9);
+        //maxTimeParatemerArray.add(1.1);
+      //  maxTimeParatemerArray.add(1.3);
+       // maxTimeParatemerArray.add(1.5);
+       // maxTimeParatemerArray.add(1.6);
+       // maxTimeParatemerArray.add(1.7);
+        //maxTimeParatemerArray.add(1.8);
+        maxTimeParatemerArray.add(2.0);
+       // maxTimeParatemerArray.add(2.3);
+      //  maxTimeParatemerArray.add(2.5);
+       // maxTimeParatemerArray.add(2.8);
+      //  maxTimeParatemerArray.add(3.0);
+       // maxTimeParatemerArray.add(3.3);
+      /*  maxTimeParatemerArray.add(3.5);
+        maxTimeParatemerArray.add(4.0);
+        maxTimeParatemerArray.add(4.5);
+        maxTimeParatemerArray.add(5.0);
+        maxTimeParatemerArray.add(6.0);
+        maxTimeParatemerArray.add(8.0);
+        maxTimeParatemerArray.add(10.0);8/
+
+        String Path = outputdir + DAGmodel + "/" + DAGmodel + taskNums + "_CFMAX_" + priceModel + ".txt";
+      /*  File File = new File(Path);
+        PrintWriter PWcfmax = new PrintWriter(File, "utf-8");
+        PWcfmax.write("HEFTmakespan:\tHEFTsumcost:\tmaxTime:\tCFMAXtestmakespan:\tCFMAXsumcost:\tMaxTimeParameter:\t\n");
+*/
+        String dmPath = outputdir + DAGmodel + "/" + DAGmodel + taskNums + "_DM_" + priceModel + ".txt";
+        File dmFile = new File(dmPath);
+        PrintWriter PWdm = new PrintWriter(dmFile, "utf-8");
+        PWdm.write("HEFTmakespan:\tHEFTsumcost:\tmaxTime:\tDMtestmakespan:\tDMsumcost:\tMaxTimeParameter:\t\n");
+/*  String EMPath = outputdir + DAGmodel + "/" + DAGmodel + taskNums + "_EM_" + priceModel + ".txt";
+        File emFile = new File(EMPath);
+        PrintWriter PWem = new PrintWriter(emFile, "utf-8");
+        PWem.write("HEFTmakespan:\tHEFTsumcost:\tmaxTime:\tEMetricmakespan:\tEMetricsumcost:\tMaxTimeParameter:\t\n");
+*/
+/*
+        String OtherPath = outputdir + DAGmodel + "/" + DAGmodel + taskNums + "_ThirdMetric_" + priceModel + ".txt";
+        File File3th = new File(OtherPath);
+        PrintWriter PW3th = new PrintWriter(File3th, "utf-8");
+        PW3th.write("HEFTmakespan:\tHEFTsumcost:\tmaxTime:\tOthermakespan:\tOthersumcost:\tMaxTimeParameter:\t\n");*/
+
+        long starttime,endtime;
+        for (int processorNum = 15; processorNum < 40; processorNum += 5) {
+            for (Double maxTimeParameter : maxTimeParatemerArray) {
+                String computationCostPath = inputDAG + "_" + processorNum + ".txt";
+                String processorInfor = inputdir + processordir + processorNum + ".txt";
+               // CFMaxTest.runHEFT(maxTimeParameter, processorNum, (taskNums + 2),
+                 //       beta, computationCostPath, inputGraphPath, processorInfor, PWcfmax, priceModel);
+                starttime=System.currentTimeMillis();
+                newtest.runHEFT(maxTimeParameter, processorNum, (taskNums + 2),
+                        beta, computationCostPath, inputGraphPath, processorInfor, PWdm, priceModel, false,starttime);
+                endtime=System.currentTimeMillis();
+                long runtime=endtime-starttime;
+                System.out.println("算法运行时间是：       "+runtime);
+              //  newtest.runHEFT(maxTimeParameter, processorNum, (taskNums + 2),
+                      //  beta, computationCostPath, inputGraphPath, processorInfor, PWem, priceModel, true);
+               // otherTest.runHEFT(maxTimeParameter, processorNum, (taskNums + 2),
+                      //  beta, computationCostPath, inputGraphPath, processorInfor, PW3th, priceModel);
+
+            }
+        }
+
+
+    }
+
+
+    public static void main(String[] args) throws IOException {
+
+
+
+        experiment example=new experiment();
+        example.Inspiral(1000,3);
+        
+        //E://0724Inspiral/
+
+       // example.SiphtTest(968,3);
+       /* int taskNums = 1000;
+        double beta = 0.36;
+        int priceModel = 3;
+
+        String inputdir = "./inputDir/";
+        String DAGmodel = "Montage";
+        String processordir = "/ProcessorFile/";
+        String inputDAG = inputdir + DAGmodel + "/" + DAGmodel + "_" + taskNums;
+        String inputGraphPath = inputDAG + "_" + (taskNums + 2) + ".txt";
+
+        ArrayList<Integer> processorNumsArray = new ArrayList<>();
+        for (int i = 1; i < 8; i++) {
+            int count = 5 * i;
+            processorNumsArray.add(count);//cpu鏁伴噺鏈�5~35涓�
+        }
+        // System.out.println(processorNumsArray);
+
+        ArrayList<Double> maxTimeParatemerArray = new ArrayList<>();
+        //maxTimeParatemerArray.add(0.9);
+        //maxTimeParatemerArray.add(1.1);
+        maxTimeParatemerArray.add(1.3);
+        maxTimeParatemerArray.add(1.5);
+       *//* maxTimeParatemerArray.add(1.6);
+        maxTimeParatemerArray.add(1.7);
+        maxTimeParatemerArray.add(1.8);
+        maxTimeParatemerArray.add(2.0);
+        maxTimeParatemerArray.add(2.3);*//*
+        maxTimeParatemerArray.add(2.5);
+        maxTimeParatemerArray.add(5.0);
+        //淇濆瓨缁撴灉鏂囦欢
+        String outputdir = "./outputDir/";
+        *//*String Path = outputdir + DAGmodel+"/"+DAGmodel+taskNums + "_CFMAX_" + priceModel + ".txt";
+        File File = new File(Path);
+        PrintWriter PWcfmax = new PrintWriter(File, "utf-8");
+        PWcfmax.write("HEFTmakespan:\tHEFTsumcost:\tmaxTime:\tCFMAXtestmakespan:\tCFMAXsumcost:\tMaxTimeParameter:\t\n");
+*//*
+        String dmPath = outputdir + DAGmodel + "/" + DAGmodel + taskNums + "_DM_" + priceModel + ".txt";
+        File dmFile = new File(dmPath);
+        PrintWriter PWdm = new PrintWriter(dmFile, "utf-8");
+        PWdm.write("HEFTmakespan:\tHEFTsumcost:\tmaxTime:\tDMtestmakespan:\tDMsumcost:\tMaxTimeParameter:\t\n");
+
+      *//*  String EMPath = outputdir + DAGmodel +"/"+DAGmodel+taskNums + "_EM_" + priceModel + ".txt";
+        File emFile = new File(EMPath);
+        PrintWriter PWem = new PrintWriter(emFile, "utf-8");
+        PWem.write("HEFTmakespan:\tHEFTsumcost:\tmaxTime:\tEMetricmakespan:\tEMetricsumcost:\tMaxTimeParameter:\t\n");
+*//*
+        String OtherPath = outputdir + DAGmodel + "/" + DAGmodel + taskNums + "_ThirdMetric_" + priceModel + ".txt";
+        File File3th = new File(OtherPath);
+        PrintWriter PW3th = new PrintWriter(File3th, "utf-8");
+        PW3th.write("HEFTmakespan:\tHEFTsumcost:\tmaxTime:\tOthermakespan:\tOthersumcost:\tMaxTimeParameter:\t\n");
+
+        //  System.out.println("kokokokokokoko!!!!!!!!!1");
+        for (Integer processorNum : processorNumsArray) {
+            for (Double maxTimeParameter : maxTimeParatemerArray) {
+                String computationCostPath = inputDAG + "_" + processorNum + ".txt";//鍚勪换鍔″湪CPU鏈�楂橀鐜囦笅鐨勮繍琛屾椂闂�
+                String processorInfor = inputdir + processordir + processorNum + ".txt";//CPU淇℃伅
+          *//*     CFMaxTest.runHEFT(maxTimeParameter, processorNum, (taskNums + 2),
+                     beta, computationCostPath, inputGraphPath, processorInfor, PWcfmax, priceModel);
+             *//*
+                newtest.runHEFT(maxTimeParameter, processorNum, (taskNums + 2),
+                        beta, computationCostPath, inputGraphPath, processorInfor, PWdm, priceModel, false);
+               *//* newtest.runHEFT(maxTimeParameter, processorNum, (taskNums + 2),
+                        beta, computationCostPath, inputGraphPath, processorInfor, PWem, priceModel,true);*//*
+                otherTest.runHEFT(maxTimeParameter, processorNum, (taskNums + 2),
+                        beta, computationCostPath, inputGraphPath, processorInfor, PW3th, priceModel);
+
+            }
+        }*/
+    }
+}
+
+
+

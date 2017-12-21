@@ -1,0 +1,361 @@
+package runtest;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.DecimalFormat;
+import java.util.*;
+import java.io.File;
+
+import taskscheduling.*;
+import taskscheduling.util.*;
+
+public class otherTest {
+    public static void runHEFT(double maxTimeParameter, int processorNums, int taskNums, double beta,
+                               String computationCostPath, String inputGraphPath, String processorInfor,
+                               PrintWriter PWnewtestFile,int priceModel) throws IOException {
+
+        //the class used for initialing
+        SchedulingInit sInit = new SchedulingInit();
+        //initial task info
+        ArrayList<Task> taskList = sInit.initTaskInfor(computationCostPath, inputGraphPath);
+        //initial communication data
+        HashMap<String, Double> taskEdgeHashMap = sInit.initTaskEdge();
+
+        //initial processor info
+        Processor[] processorsArray;
+        processorsArray = sInit.initProcessorInfor(processorInfor, processorNums,priceModel);
+
+        //compute average computation time using for the rank锛岃绠楀钩鍧囪绠楁椂闂�
+        for (int i = 0; i < taskNums; ++i) {
+            Task tempTask = taskList.get(i);
+            taskList.get(i).averageCost = CalcArrayListSum.calcArrayListSum(tempTask.computationCost) / processorNums;
+        }
+        //涓婇儴鍒嗗凡瀹屾垚鍒濆鍖栧伐浣滐紝浠ヤ笅鏄慨鏀归儴鍒�
+        int cfCount = 0;
+        int freqcount = 0;
+        for (int i = 0; i < processorNums; i++) {
+            int tmp = (processorsArray[i].fMax - processorsArray[i].fMin) / processorsArray[i].fLevel+1;
+            if (tmp > freqcount) {
+                freqcount = tmp ;
+            }
+        }
+        int[][] cpuFreq = new int[processorNums][freqcount];
+        //澶勭悊鍣ㄧ殑cpu棰戠巼
+        for (int i = 0; i < processorNums; i++) {
+            for (int j = 0; processorsArray[i].fMin + j * processorsArray[i].fLevel <= processorsArray[i].fMax; j++) {
+                cpuFreq[i][j] = processorsArray[i].fMin + j * processorsArray[i].fLevel;
+                cfCount++;
+            }
+        }
+        // for (int i = 0; i < processorNums; i++)
+        //   System.out.println(Arrays.toString(cpuFreq[i]));
+        HashMap<Integer, String> schedulerList = new HashMap<>();//璁板綍璋冨害鍒楄〃锛坱ask搴忓彿锛屽鐞嗗櫒搴忓彿r_棰戠巼f锛�
+
+        //compute rank,then sort锛岃繑鍥炲悇鑺傜偣鐨勬渶闀挎墽琛屾椂闂寸殑闄嶅簭鎺掑垪
+        ArrayList<Integer> taskOrderList = CalcTaskRankValue.calcTaskRankValue1(taskList, taskEdgeHashMap, taskNums);
+
+        //scheduling using HEFT锛屽浜庢瘡涓�涓换鍔★紝閫夋嫨涓�涓悎閫傜殑鏃堕棿闂撮殭鎻掑叆
+        for (Integer taskId : taskOrderList) {
+            //  System.out.print(taskId+"\t");
+            TaskScheduling.taskScheduling(taskId, taskList, taskEdgeHashMap, processorsArray);
+            Task tmp = taskList.get(taskId );
+            //璁板綍璋冨害鍒楄〃锛坱ask搴忓彿锛屽鐞嗗櫒搴忓彿r_棰戠巼f锛�
+            schedulerList.put(taskId , tmp.selectedProcessorId + "_" + processorsArray[tmp.selectedProcessorId].fMax);
+        }
+        //璁＄畻HEFT璋冨害鍚庣殑姣忎釜浠诲姟鐨勮绠楀紑閿�
+        CalcTaskMaxCost.calcTaskMaxCost(beta, taskList, processorsArray);
+
+        //compute min cost in all processors锛屽鎵句唬浠锋渶灏忕殑澶勭悊鍣ㄧ殑缂栧彿鍜宭evel
+        GetMinCostProcessorIdLevel.getMinCostProcessorIdLevel(beta, taskList, processorsArray);
+        //rank task by cost difference
+        //List<Map.Entry<Integer, Double>> taskDisCostList = GetDisCostTaskOrder.getDisCostTaskOrder(taskList);
+
+        //杈撳嚭HEFT姹傚緱鐨勬渶澶PU棰戠巼涓嬬殑鎵ц鏃堕棿涓庤绠楄垂鐢�
+        //compute sum cost and makespan,deadline(maxTime)
+        double sumCost = CalaCostofAll.calcCostofAll(taskList, processorsArray, beta);
+        double makespan = CalcMakeSpan.calcMakeSpan(taskList);
+        double maxTime = makespan * maxTimeParameter;//浼拌鐨勬埅姝㈡椂闂�
+        System.out.println("Using HEFT \tmakespan: " + makespan + "\tsumCost: " + sumCost);
+        //淇濆瓨缁撴灉
+        //PrintWriter pw=new PrintWriter(newtestFile,"utf-8");
+        //   pw.write("HEFTmakespan:\tHEFTsumcost:\tmaxTime:\tNEWTESTmakespan:\tNEWTESTsumcost:\n");
+        //  pw.write(makespan+"\t"+sumCost+"\t");
+
+
+        double[][] RW = new double[taskNums][cfCount];
+        double[][] RT = new double[taskNums][cfCount];
+        boolean flag = false;
+        HashMap<Integer, String> bestList = new HashMap<>();
+        HashMap<Integer, String> jinji = new HashMap<>();
+        String[] evalMax = new String[taskNums];
+        //鍒濆鍖朢T銆丷W鐭╅樀
+        for (int taskid = 0; taskid < taskNums; taskid++) {
+            evalMax[taskid] = "";
+            String[] str = schedulerList.get(taskid).split("_");
+            int p = Integer.valueOf(str[0]);
+            int q = Integer.valueOf(str[1]);
+
+            bestList.put(taskid, p + "_" + q);
+            double rt = CalcRunTime.calcRunTime(beta, q, processorsArray[p], taskList.get(taskid).computationCost.get(p));
+             //璁＄畻褰撳墠鑺辫垂鐨勬垚鏈�
+            double tc = rt * CalcCost.getCost(q, processorsArray[p]);
+
+            int k = 0;
+            for (int i = 0; i < processorNums; i++) {
+                for (int j = 0; j < cpuFreq[i].length; j++) {
+                    if (cpuFreq[i][j] > 0) {
+                      double rt1 = CalcRunTime.calcRunTime(beta, cpuFreq[i][j], processorsArray[i], taskList.get(taskid).computationCost.get(i));
+                        RT[taskid][k] = rt - rt1;
+                        //鏃堕棿鍑忓皯閲�
+                        //璁＄畻鍦ㄨ閰嶇疆涓嬮渶瑕佽姳璐圭殑鎴愭湰
+                        double tc1 = rt1 * CalcCost.getCost(cpuFreq[i][j], processorsArray[i]);
+                        //  System.out.println(tc+"\t"+tc1);
+                        RW[taskid][k] = tc - tc1;//鏂伴厤缃笅鎴愭湰鑳藉鑺傜害澶氬皯
+                        if (RW[taskid][k] > 0) {
+                            flag = true;
+                            //double temp;
+                            double metric = RT[taskid][k] / maxTime + RW[taskid][k] / sumCost;
+                            // double metric =  RW[taskid][k] ;
+                            if (evalMax[taskid].length() > 0) {
+                                String[] strs = evalMax[taskid].split(",");
+                                int tmp = Integer.valueOf(strs[0]);
+
+                                switch (tmp) {
+                                    case 1:
+                                        if (RT[taskid][k] > 0 && metric > Double.valueOf(strs[1])) {
+                                            // temp = RT[taskid][k] / maxTime + RW[taskid][k] / sumCost;
+                                            evalMax[taskid] = 1 + "," + metric;
+                                            bestList.put(taskid, i + "_" + cpuFreq[i][j]);
+                                        }
+                                        break;
+                                    case 2:
+                                        if (RT[taskid][k] > 0) {
+                                            evalMax[taskid] = 1 + "," + metric;
+                                            bestList.put(taskid, i + "_" + cpuFreq[i][j]);
+                                        } else if ((RT[taskid][k] == 0 && metric > Double.valueOf(strs[1]))) {
+                                            //temp = RW[taskid][k] / sumCost;
+                                            evalMax[taskid] = 2 + "," + metric;
+                                            bestList.put(taskid, i + "_" + cpuFreq[i][j]);
+                                        }
+                                        break;
+                                    case 3:
+                                        if (RT[taskid][k] > 0) {
+                                            // temp = RT[taskid][k] / maxTime + RW[taskid][k] / sumCost;
+                                            evalMax[taskid] = 1 + "," + metric;
+                                            bestList.put(taskid, i + "_" + cpuFreq[i][j]);
+                                        }
+                                        if (RT[taskid][k] == 0) {
+                                            // temp = RW[taskid][k] / sumCost;
+                                            evalMax[taskid] = 2 + "," + metric;
+                                            bestList.put(taskid, i + "_" + cpuFreq[i][j]);
+                                        }
+                                        if (RT[taskid][k] < 0) {
+                                            metric = (-1 * RW[taskid][k]) / RT[taskid][k];
+                                            //temp=RW[taskid][k];
+                                            if (metric < Double.valueOf(strs[1])) {
+                                                evalMax[taskid] = 3 + "," + metric;
+                                                bestList.put(taskid, i + "_" + cpuFreq[i][j]);
+                                            }
+                                        }
+                                        break;
+
+                                }
+                            } else {
+                                if (RT[taskid][k] > 0) {
+                                    //temp = RT[taskid][k] / maxTime + RW[taskid][k] / sumCost;
+                                    evalMax[taskid] = 1 + "," + metric;
+                                    bestList.put(taskid, i + "_" + cpuFreq[i][j]);
+                                }
+                                if (RT[taskid][k] == 0) {
+                                    // temp = RW[taskid][k] / sumCost;
+                                    evalMax[taskid] = 2 + "," + metric;
+                                    bestList.put(taskid, i + "_" + cpuFreq[i][j]);
+                                }
+                                if (RT[taskid][k] < 0) {
+                                    metric = RW[taskid][k] / (-1*RT[taskid][k]);
+                                    // metric=RW[taskid][k];
+                                    evalMax[taskid] = 3 + "," + metric;
+                                    bestList.put(taskid, i + "_" + cpuFreq[i][j]);
+                                }
+                            }
+
+                        }
+                        //   System.out.println("k  :"+k+"i  :"+i+"j  :"+j);
+                        k++;
+                    }
+
+                }
+
+            }
+        }
+
+
+        double maxSumCost = sumCost;
+        double HEFTmakespan = makespan;
+        boolean t = true;
+        double lastSumCost = sumCost;
+        double lastTime = makespan;
+        String lastbestSche = "";
+        while (flag && t) {
+            Task[] oldTaskInfor = new Task[taskList.size()];
+            for (int i = 0; i < taskList.size(); ++i) {
+                oldTaskInfor[i] = new Task();
+                oldTaskInfor[i].selectedProcessorId = taskList.get(i).selectedProcessorId;
+                oldTaskInfor[i].selectedFre = taskList.get(i).selectedFre;
+                oldTaskInfor[i].timeGap = new TimeGap();
+                oldTaskInfor[i].timeGap.startTime = taskList.get(i).timeGap.startTime;
+                oldTaskInfor[i].timeGap.endTime = taskList.get(i).timeGap.endTime;
+                oldTaskInfor[i].timeGap.gap = taskList.get(i).timeGap.gap;
+            }
+
+            int bestid = 0;
+            String bestSche = evalMax[0];
+            String[] bestScheTemp;
+           // flag = false;
+            //姹備竴涓皟搴︽柟妗�
+            for (int i = 1; i < taskNums; i++) {
+                if (bestSche.length() == 0) {
+                    bestSche = evalMax[i];
+                    bestid = i;
+                    //  flag=false;
+                } else if (evalMax[i].length() > 0) {
+                    String[] strings = evalMax[i].split(",");
+                    bestScheTemp = bestSche.split(",");
+
+                    if (Double.valueOf(strings[0]) < Double.valueOf(bestScheTemp[0])
+                            || (strings[0].equals(bestScheTemp[0])
+                            && Double.valueOf(strings[1]) > Double.valueOf(bestScheTemp[1]))) {
+                        bestSche = evalMax[i];
+                        bestid = i;
+                    }
+
+                }
+
+            }
+
+            if (bestSche.length() > 0){
+                flag=true;
+            }else
+                flag=false;
+          /*  for (int i=0;i<taskNums;i++)
+                System.out.println(Arrays.toString(RT[i]));
+            System.out.println("###########################################################################################################################");*/
+           // System.out.println(Arrays.toString(evalMax)+"\n#*******************************************************************************************************************");
+            // System.out.println(bestSche);
+            //  bestScheTemp=bestSche.split(",");
+           /* if (bestSche.length() > 0) {
+                if (bestSche.equals(lastbestSche)) {
+                    flag = false;
+                } else
+                    flag = true;
+                lastbestSche = bestSche;
+            }*/
+
+            String[] string = newtestUpdate.newtestUpdate(taskList, processorsArray, bestid, bestList, taskEdgeHashMap, beta).split("_");
+            sumCost = Double.valueOf(string[1].trim());
+            double time = Double.valueOf(string[0].trim());
+
+           //  System.out.println("other test BESTid : "+bestid+"\t"+bestList.get(bestid));
+            // System.out.println(" runtime is: " + time +"maxTime is: "+maxTime +" all cost is: " + sumCost);
+
+            if (maxTime < time || ((lastTime < time) && (lastSumCost < sumCost))) {
+                for (int i = 0; i < taskList.size(); ++i) {
+                    taskList.get(i).selectedProcessorId = oldTaskInfor[i].selectedProcessorId;
+                    taskList.get(i).selectedFre = oldTaskInfor[i].selectedFre;
+                    taskList.get(i).timeGap.startTime = oldTaskInfor[i].timeGap.startTime;
+                    taskList.get(i).timeGap.endTime = oldTaskInfor[i].timeGap.endTime;
+                    taskList.get(i).timeGap.gap = oldTaskInfor[i].timeGap.gap;
+                    //double makespanOthertest = CalcMakeSpan.calcMakeSpan(taskList);
+                    // System.out.println(" 杩樺師鍚庣殑杩愯鏃堕棿鏄細 "+makespanOthertest);
+                }
+
+                //鍔犲叆绂佸繉琛�
+                boolean isStrIn = false;
+                if (jinji.keySet().contains(bestid)) {
+                    String[] strs = jinji.get(bestid).split(",");
+
+                    for (int i = 0; i < strs.length; i++) {
+                        if (strs[i].equals(bestList.get(bestid))) {
+                            isStrIn = true;
+                        }
+                    }
+                }
+                if (!isStrIn) {
+                    jinji.put(bestid, jinji.get(bestid) + "," + bestList.get(bestid));//鍔犲叆绂佸繉
+                }
+            } else {
+                lastSumCost = sumCost;
+                lastTime = time;
+                schedulerList.put(bestid, bestList.get(bestid));
+                //  System.out.println(bestid+"   "+time+"   "+sumCost+"  "+bestList.get(bestid));
+                //System.out.println(" runtime is: " +lastTime  + " all cost is: " + lastSumCost);
+            }
+
+            if (flag)
+                 newtestComputeRW.computeTask(RW, RT, beta, schedulerList, cpuFreq, processorsArray,
+                        maxSumCost,  maxTime, taskList, processorNums,  bestList, jinji, evalMax,bestid);
+
+            for (int i = 0; i < taskNums; i++) {
+                if (jinji.keySet().contains(i)) {
+                    t = false;
+                    String[] strings = jinji.get(i).split(",");
+                    if (strings.length != (cfCount + 1)) {
+                        t = true;
+                        break;
+                    }
+                }
+            }
+            //System.out.println(flag+"\t"+t);
+        }
+        double makespanOthertest = CalcMakeSpan.calcMakeSpan(taskList);
+        double sumCostOthertest = CalaCostofAll.calcCostofAll(taskList, processorsArray, beta);
+        // System.out.println(maxTime + " and " + makespan);
+        System.out.println("OtherTest runtime is: " + makespanOthertest + " all cost is: " + sumCostOthertest+
+        "\n#######################################################################################");
+        DecimalFormat df = new DecimalFormat("#.00");
+        PWnewtestFile.write(df.format(HEFTmakespan) + "\t" + df.format(maxSumCost) + "\t" + df.format(maxTime) +
+                "\t" + df.format(makespanOthertest) + "\t" + df.format(sumCostOthertest) + "\t" + maxTimeParameter + "\n");
+        PWnewtestFile.flush();
+
+    }
+
+    public static void main(String[] args) throws IOException {
+        int taskNums = 53;
+        double beta = 0.4;
+        String dirPath = "";//D:\\workspaces\\FrequenceHEFT\\
+        String graphModelName = "Airsn";
+        String inputGraphPath = dirPath + "airsn.txt";
+
+        ArrayList<Integer> processorNumsArray = new ArrayList<>();
+        processorNumsArray.add(3);
+        processorNumsArray.add(5);
+        processorNumsArray.add(8);
+
+        ArrayList<Double> maxTimeParatemerArray = new ArrayList<>();
+        //maxTimeParatemerArray.add(0.9);
+        maxTimeParatemerArray.add(1.1);
+        maxTimeParatemerArray.add(1.3);
+        maxTimeParatemerArray.add(1.5);
+        maxTimeParatemerArray.add(1.6);
+        maxTimeParatemerArray.add(1.7);
+        maxTimeParatemerArray.add(1.8);
+        maxTimeParatemerArray.add(2.0);
+        maxTimeParatemerArray.add(2.3);
+        maxTimeParatemerArray.add(2.5);
+        maxTimeParatemerArray.add(5.0);
+        //淇濆瓨缁撴灉鏂囦欢
+        String dir = "./result/";
+        String OtherPath = dir + graphModelName + "_othertest_1.txt";
+        File emFile = new File(OtherPath);
+        PrintWriter PWother = new PrintWriter(emFile, "utf-8");
+        PWother.write("HEFTmakespan:\tHEFTsumcost:\tmaxTime:\tOTHERtestmakespan:\tOTHERtestsumcost:\tMaxTimeParameter:\t\n");
+        for (Integer processorNum : processorNumsArray) {
+            for (Double maxTimeParameter : maxTimeParatemerArray) {
+                String computationCostPath = dirPath + graphModelName + processorNum + ".txt";
+                String processorInfor = dirPath + processorNum + ".txt";
+                otherTest.runHEFT(maxTimeParameter, processorNum, taskNums,
+                        beta, computationCostPath, inputGraphPath, processorInfor, PWother,2);
+            }
+        }
+    }
+}

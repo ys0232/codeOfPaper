@@ -1,0 +1,2 @@
+HEFTmakespan:	HEFTsumcost:	maxTime:	CFMAXtestmakespan:	CFMAXsumcost:	MaxTimeParameter:	
+16049.22	2745716.66	48147.66	48139.63	2422554.19	3.0
