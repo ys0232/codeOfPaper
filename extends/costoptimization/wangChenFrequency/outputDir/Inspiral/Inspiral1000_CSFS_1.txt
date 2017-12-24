@@ -1,2 +1,0 @@
-HEFTmakespan:	HEFTsumcost:	maxTime:	DMtestmakespan:	DMsumcost:	MaxTimeParameter:	
-16049.22	2745716.66	48147.66	48128.46	2726004.86	3.0

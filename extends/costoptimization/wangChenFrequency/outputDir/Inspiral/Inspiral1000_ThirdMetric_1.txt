@@ -1,2 +1,0 @@
-HEFTmakespan:	HEFTsumcost:	maxTime:	Othermakespan:	Othersumcost:	MaxTimeParameter:	
-16049.22	2745716.66	48147.66	48146.13	2385043.16	3.0

@@ -1,2 +1,0 @@
-HEFTmakespan:	HEFTsumcost:	maxTime:	EMetricmakespan:	EMetricsumcost:	MaxTimeParameter:	
-16049.22	2745716.66	48147.66	48143.69	2480233.73	3.0
