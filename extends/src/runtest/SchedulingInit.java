@@ -144,8 +144,8 @@ public class SchedulingInit {
             processorArray[i].processorId = i;
             processorArray[i].availableTime = 0;
             processorArray[i].fMax = Integer.parseInt(data[0]);
-            processorArray[i].fMin = Integer.parseInt(data[2]);
-            processorArray[i].fLevel = Integer.parseInt(data[1]);
+            processorArray[i].fMin = Integer.parseInt(data[1]);
+            processorArray[i].fLevel = Integer.parseInt(data[2]);
             //processorArray[i].costMinUnit = Double.parseDouble(data[4]);
             processorArray[i].costModel = priceModel;
             processorArray[i].costMaxUnit = CalcCost.getCost(processorArray[i].fMax, processorArray[i]);

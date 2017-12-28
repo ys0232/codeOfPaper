@@ -1,38 +1,24 @@
-package runtest;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.text.DecimalFormat;
-import java.util.*;
+package initialSchedulingAlgorithm;
 
 import taskscheduling.*;
 import taskscheduling.util.*;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class CFMaxTest {
-    public static void runHEFT(double maxTimeParameter, int processorNums, int taskNums, double beta,
-                               String computationCostPath, String inputGraphPath, String processorInfor,
-                               PrintWriter PWcfmax,int priceModel,long starttime) throws IOException {
+/**
+ * Created by lenovo on 2017/12/28.
+ */
+public class CFMax {
+    public static void runCFMax(int processorNums, Processor[] processorsArray, ArrayList<Task> taskList, int taskNums, double beta,
+                                HashMap<String, Double> taskEdgeHashMap, double maxTimeParameter, long starttime,
+                                HashMap<Integer, String> schedulerList, double sumCost, double makespan) throws IOException {
 
-        //the class used for initialing
-        SchedulingInit sInit = new SchedulingInit();
-        //initial task info
-        ArrayList<Task> taskList = sInit.initTaskInfor(computationCostPath, inputGraphPath);
-        //initial communication data
-        HashMap<String, Double> taskEdgeHashMap = sInit.initTaskEdge();
-
-        //initial processor info
-        Processor[] processorsArray;
-        processorsArray = sInit.initProcessorInfor(processorInfor, processorNums,priceModel);
-
-        //compute average computation time using for the rank，计算平均计算时间
-        for (int i = 0; i < taskNums; ++i) {
-            Task tempTask = taskList.get(i);
-            taskList.get(i).averageCost = CalcArrayListSum.calcArrayListSum(tempTask.computationCost) / processorNums;
-        }
-
-        //上部分已完成初始化工作，以下是修改部分
+       // System.out.println(schedulerList);
         int cfCount = 0;
         int freqcount = 0;
         for (int i = 0; i < processorNums; i++) {
@@ -50,36 +36,9 @@ public class CFMaxTest {
                 cfCount++;
             }
         }
-        // for (int i = 0; i < processorNums; i++)
-        //   System.out.println(Arrays.toString(cpuFreq[i]));
-        HashMap<Integer, String> schedulerList = new HashMap<>();//记录调度列表（task序号，处理器序号r_频率f）
-
-        //compute rank,then sort，返回各节点的最长执行时间的降序排列
-        ArrayList<Integer> taskOrderList = CalcTaskRankValue.calcTaskRankValue1(taskList, taskEdgeHashMap, taskNums);
-
-        //scheduling using HEFT，对于每一个任务，选择一个合适的时间间隙插入
-        for (Integer taskId : taskOrderList) {
-            // System.out.print(taskId+"\t");
-            TaskScheduling.taskScheduling(taskId, taskList, taskEdgeHashMap, processorsArray);
-            Task tmp = taskList.get(taskId);
-            //记录调度列表（task序号，处理器序号r_频率f）
-            schedulerList.put(taskId , tmp.selectedProcessorId + "_" + processorsArray[tmp.selectedProcessorId].fMax);
-        }
-        //计算HEFT调度后的每个任务的计算开销
-        CalcTaskMaxCost.calcTaskMaxCost(beta, taskList, processorsArray);
-
-        //compute min cost in all processors，寻找代价最小的处理器的编号和level
-        GetMinCostProcessorIdLevel.getMinCostProcessorIdLevel(beta, taskList, processorsArray);
-        //rank task by cost difference
-        List<Map.Entry<Integer, Double>> taskDisCostList = GetDisCostTaskOrder.getDisCostTaskOrder(taskList);
-
         //输出HEFT求得的最大CPU频率下的执行时间与计算费用
         //compute sum cost and makespan,deadline(maxTime)
-        double sumCost = CalaCostofAll.calcCostofAll(taskList, processorsArray, beta);
-        double makespan = CalcMakeSpan.calcMakeSpan(taskList);
         double maxTime = makespan * maxTimeParameter;//估计的截止时间
-        System.out.println("Using HEFT \tmakespan: " + makespan + "\tsumCost: " + sumCost);
-
 
         double[][] RW = new double[taskNums][cfCount];
         boolean flag;
@@ -92,26 +51,21 @@ public class CFMaxTest {
         flag = computeRW.compute(RW, beta, schedulerList, cpuFreq, processorsArray, taskList, processorNums, bestList, jinji, CFMax);
         double lastTime = makespan;
         double lastSumCost = sumCost;
-        double maxSumCost = sumCost;
-        double HEFTmakespan = makespan;
         boolean t = true;
-        double tcount=0;
-        PrintWriter pw;
-
-      //  pw=new PrintWriter("./outputDir/runtime_cfmax"+sumCost+".txt");
-       // pw.write("tcount: \t cost:\n");
-      //  pw.flush();
+        double tcount = 0;
+        //   PrintWriter pw;
+        //  pw=new PrintWriter("./outputDir/runtime_cfmax"+sumCost+".txt");
+        // pw.write("tcount: \t cost:\n");
+        //  pw.flush();
 
         while (flag && t) {
-
-            long nowtime=System.currentTimeMillis();
-            long difftime=(nowtime-starttime)/500;
-            if(difftime>tcount){
-                tcount=difftime;
-               // System.out.println(lastSumCost);
-              //  pw.write(tcount+"\t"+lastSumCost+"\n");
-               // pw.flush();
-
+            long nowtime = System.currentTimeMillis();
+            long difftime = (nowtime - starttime) / 500;
+            if (difftime > tcount) {
+                tcount = difftime;
+                // System.out.println(lastSumCost);
+                //  pw.write(tcount+"\t"+lastSumCost+"\n");
+                // pw.flush();
             }
 
             double max = 0;
@@ -129,7 +83,7 @@ public class CFMaxTest {
                 String[] str = tmp.split(",");
                 int taskid = Integer.valueOf(str[0]);
                 str = str[1].split("_");
-                /// Task task = taskList.get(taskid);
+                 Task task = taskList.get(taskid);
                 //保存当前状态用以回滚
                 Task[] oldTaskInfor = new Task[taskList.size()];
                 for (int i = 0; i < taskList.size(); ++i) {
@@ -146,9 +100,9 @@ public class CFMaxTest {
 
                 sumCost = Double.valueOf(string[1].trim());
                 double time = Double.valueOf(string[0].trim());
-                // System.out.println(maxTime + " and " + time);
-               //  System.out.println("BESTid : "+tm+"\t"+bestList.get(tm));
-                // System.out.println(" runtime is: " + time +"maxTime is: "+maxTime +" all cost is: " + sumCost);
+              //   System.out.println(maxTime + " and " + time);
+               //   System.out.println("BESTid : "+tm+"\t"+bestList.get(tm));
+               //  System.out.println(" runtime is: " + time +"maxTime is: "+maxTime +" all cost is: " + sumCost);
 
                 if (maxTime < time || ((lastTime <= time) && (lastSumCost <= sumCost))) {
                     for (int i = 0; i < taskList.size(); ++i) {
@@ -161,7 +115,6 @@ public class CFMaxTest {
                     boolean isStrIn = false;
                     if (jinji.keySet().contains(taskid)) {
                         String[] strs = jinji.get(taskid).split(",");
-
                         for (int i = 0; i < strs.length; i++) {
                             if (strs[i].equals(str[0] + "_" + str[1])) {
                                 isStrIn = true;
@@ -171,8 +124,6 @@ public class CFMaxTest {
                     if (!isStrIn) {
                         jinji.put(taskid, jinji.get(taskid) + "," + str[0] + "_" + str[1]);//加入禁忌
                     }
-
-
                 } else {
                     lastSumCost = sumCost;
                     lastTime = time;
@@ -183,7 +134,7 @@ public class CFMaxTest {
             } else {
                 flag = false;
             }
-                        //System.out.println(bestList);
+            //System.out.println(bestList);
             if (flag)
                 computeRW.computeTask(RW, beta, schedulerList, cpuFreq, processorsArray, taskList, processorNums, bestList, jinji, CFMax, tm);
 
@@ -196,40 +147,20 @@ public class CFMaxTest {
                         break;
                     }
                 }
-
             }
-
         }
         /*for (int i = 0; i < taskNums; i++) {
             Task task=taskList.get(i);
             System.out.println(i+"   "+task.selectedProcessorId+" "+task.selectedFre);
         }*/
-
         double makespanCFMax = CalcMakeSpan.calcMakeSpan(taskList);
         double sumCostCFMax = CalaCostofAll.calcCostofAll(taskList, processorsArray, beta);
-      //  System.out.println(maxTime + " and " + makespanCFMax);
+
+        //  System.out.println(maxTime + " and " + makespanCFMax);
         System.out.println("CFMax runtime is: " + makespanCFMax + " all cost is: " + sumCostCFMax);
-       // DecimalFormat df = new DecimalFormat("#.00");
-      //  PWcfmax.write( df.format(makespanCFMax) + "\t" + df.format(sumCostCFMax/1e5) + "\t");
-       // PWcfmax.flush();
-    }
-    public static void main(String[] args) throws IOException{
-        int taskNums = 53;
-        double beta = 0.4;
-        String dirPath = "";//D:\\workspaces\\FrequenceHEFT\\
-        String graphModelName = "Airsn";
-        String inputGraphPath = dirPath +graphModelName+ "transfer.txt";
-        int processorNum=3;
-        int pricelModel=2;
-       double maxTimeParameter=1.5;
-        String Path="1.txt";
-        File File = new File(Path);
-        PrintWriter PWcfmax=new PrintWriter(File, "utf-8");
-        String processorInfor = dirPath + processorNum + ".txt";
-        String computationCostPath = dirPath + graphModelName + "runtime.txt";
-        runHEFT(maxTimeParameter,processorNum, taskNums, beta, computationCostPath,
-                inputGraphPath, processorInfor, PWcfmax,2,0);
-
-
+       // System.out.println(schedulerList);
+        // DecimalFormat df = new DecimalFormat("#.00");
+        //  PWcfmax.write( df.format(makespanCFMax) + "\t" + df.format(sumCostCFMax/1e5) + "\t");
+        // PWcfmax.flush();
     }
 }
