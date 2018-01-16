@@ -43,6 +43,29 @@ public class SchedulingInit {
         bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(new File(inputGraph)), "utf-8"));
         inputLine = bufferedReader.readLine();
 
+        for (int i=0;i<taskList.size()-1;i++){
+            Task taski=taskList.get(i);
+          // System.out.println(i+"\t"+taski.taskId);
+            for (int j=i+1;j<taskList.size();j++){
+                Task temp=taskList.get(i);
+                if (temp.taskId>taskList.get(j).taskId){
+                  //  System.out.println(taski.taskId+"\t"+taskList.get(j).taskId+"\t"+i+"\t"+j);
+                    taskList.set(i,taskList.get(j));
+                    taskList.set(j,temp);
+                }
+            }
+           /* for (Task k:taskList){
+                System.out.print(k.taskId+"\t");
+            }
+            System.out.println("\n"+i+"\t"+taskList.get(i).taskId);*/
+        }
+       /* for (Task i:taskList){
+            System.out.println(i.taskId+"\t"+i.computationCost.toString());
+            // System.out.println(i.taskId+"\t"+i.predecessorTaskList.size());
+
+        }
+*/
+
         //System.out.println(taskList.size());
         while (inputLine != null) {
 

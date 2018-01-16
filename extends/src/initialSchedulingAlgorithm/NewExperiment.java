@@ -26,12 +26,12 @@ public class NewExperiment {
         PrintWriter PWcfmax = new PrintWriter(File, "utf-8");
         taskNums+=2;
         MINMIN.Minmin_CFMax(processorNum, taskNums, beta, pricelModel, computationCostPath, inputGraphPath, processorInfor, maxTimeParameter, 0);
-        MAXmin.MaxMin_CFMax(processorNum, taskNums, beta, pricelModel, computationCostPath, inputGraphPath, processorInfor, maxTimeParameter, 0);
-        MET.Met_CFMax(processorNum, taskNums, beta, pricelModel, computationCostPath, inputGraphPath, processorInfor, maxTimeParameter, 0);
-        MCT.Mct_CFMax(processorNum, taskNums, beta, pricelModel, computationCostPath, inputGraphPath, processorInfor, maxTimeParameter, 0);
+       MAXmin.MaxMin_CFMax(processorNum, taskNums, beta, pricelModel, computationCostPath, inputGraphPath, processorInfor, maxTimeParameter, 0);
+       MET.Met_CFMax(processorNum, taskNums, beta, pricelModel, computationCostPath, inputGraphPath, processorInfor, maxTimeParameter, 0);
+       MCT.Mct_CFMax(processorNum, taskNums, beta, pricelModel, computationCostPath, inputGraphPath, processorInfor, maxTimeParameter, 0);
 
-         CFMaxTest.runHEFT(maxTimeParameter, processorNum, taskNums, beta, computationCostPath,
-                inputGraphPath, processorInfor, PWcfmax, pricelModel, 0);
+     //   CFMaxTest.runHEFT(maxTimeParameter, processorNum, taskNums, beta, computationCostPath,
+       //       inputGraphPath, processorInfor, PWcfmax, pricelModel, 0);
 
 
     }

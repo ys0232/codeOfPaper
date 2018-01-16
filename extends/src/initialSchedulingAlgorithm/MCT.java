@@ -56,49 +56,52 @@ public class MCT {
             //unscheduledTaskList is used to judge whether a task is scheduled or not
             unscheduledTask[i] = true;
         }
-        //     int[] completedParent=new int[taskNums];
-
-        for (int i = 0; i < taskNums; i++) {
-            Task task = taskList.get(i);
-            taskMinCTime[i] = Double.MAX_VALUE;
-            for (int j = 0; j < processorNums; j++) {
-                Processor pro = processorsArray[j];
-                double Eij = task.computationCost.get(j);
-                CompletionTime[i][j] = pro.availableTime + Eij;
-                if (taskMinCTime[i] > CompletionTime[i][j]) {
-                    taskMinCTime[i] = CompletionTime[i][j];
-                    proMinCTime[i] = j;
-                }
-            }
-        }
-        int[] completedParent = new int[taskNums];
+       int[] completedParent=new int[taskNums];
         double[] transferTime = new double[taskNums];
-        while (unscheduledNum > 0) {
-            for (int taskid = 0; taskid < taskNums; taskid++) {
-                Task tp = taskList.get(taskid);
-                if (unscheduledTask[taskid] || tp.predecessorTaskList.size() - completedParent[taskid] > 0) {
-                    int proID = proMinCTime[taskid];
-                    processorsArray[proID].availableTime += taskMinCTime[taskid];
-                    tp.selectedFre = processorsArray[proID].fMax;
-                    tp.selectedProcessorId = proID;
-                    for (int i = 0; i < taskNums; i++) {
-                        // remove completed task
-                        Task task = taskList.get(i);
-                        if (task.predecessorTaskList.contains(taskid)) {
-                            transferTime[i] += taskEdgeHashMap.get(String.valueOf(taskid + "_" + i));
-                            completedParent[i] += 1;
-                        }
-                    }
 
-                    schedulerList.put(taskid, proID + "_" + tp.selectedFre);
-                    // delete task tp from unscheduledTask
-                    unscheduledTask[taskid] = false;
-                    unscheduledNum -= 1;
-                    //  System.out.println("remove task : " + taskid + "\tassigned processor :" + proMinCTime[taskid]
-                    //    + "\nminCompletionTime is :" + taskMinCTime[taskid] + "\tcost is : " + cost);
+        while (unscheduledNum > 0) {
+            for (int i = 0; i < taskNums; i++) {
+                Task task = taskList.get(i);
+                int taskid=task.taskId;
+                taskMinCTime[taskid] = Double.MAX_VALUE;
+                if (!unscheduledTask[taskid] || task.predecessorTaskList.size() - completedParent[taskid] > 0) {
+                    //check whether task is scheduled or not and all its parents tasks are scheduled or not.
+                    continue;
                 }
+                for (int j = 0; j < processorNums; j++) {
+                    Processor pro = processorsArray[j];
+                    double Eij = task.computationCost.get(j) + transferTime[taskid];
+                    CompletionTime[taskid][j] = pro.availableTime + Eij;
+                  //  System.out.print(pro.availableTime+"\t");
+                    if (taskMinCTime[taskid] > CompletionTime[taskid][j]) {
+                        taskMinCTime[taskid] = CompletionTime[taskid][j];
+                        proMinCTime[taskid] = j;
+                    }
+                }
+                Processor schedPro = processorsArray[proMinCTime[taskid]];
+                schedPro.availableTime = taskMinCTime[taskid];
+               // System.out.println("\n"+taskMinCTime[i]+"\t"+i);
+                for (int k = 0; k < taskNums; k++) {
+                    // remove completed task
+                    Task tp = taskList.get(k);
+                    if (tp.predecessorTaskList.contains(taskid)) {
+                        transferTime[k] += taskEdgeHashMap.get(String.valueOf(taskid + "_" + k));
+                        completedParent[k] += 1;
+                    }
+                }
+                unscheduledTask[taskid] = false;
+                unscheduledNum -= 1;
             }
         }
+
+        for (int i=0;i<taskNums;i++){
+            Task tp=taskList.get(i);
+            int proID = proMinCTime[i];
+            tp.selectedFre = processorsArray[proID].fMax;
+            tp.selectedProcessorId = proID;
+            schedulerList.put(i,proID+"_"+tp.selectedFre);
+        }
+
         return schedulerList;
 
     }

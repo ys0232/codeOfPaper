@@ -8,6 +8,7 @@ import taskscheduling.util.CalcCost;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 /**
@@ -78,7 +79,7 @@ public class MAXmin {
                     }
                 }
             }
-            double maxCompletionTime = Double.MIN_VALUE;
+            double maxCompletionTime =-1;
             int minTp = -1;
             for (int taskid = 0; taskid < taskNums; taskid++) {
                 //find the task tp with earliest completion time
@@ -86,6 +87,7 @@ public class MAXmin {
                 if (!unscheduledTask[taskid] || task.predecessorTaskList.size() - completedParent[taskid] > 0) {
                     continue;
                 }
+                //System.out.println(maxCompletionTime+"\t"+ Arrays.toString(taskMinCTime));
                 if (maxCompletionTime < taskMinCTime[taskid]) {
                     maxCompletionTime = taskMinCTime[taskid];
                     minTp = taskid;
