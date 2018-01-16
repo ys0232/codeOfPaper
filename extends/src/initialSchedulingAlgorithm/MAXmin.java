@@ -8,7 +8,6 @@ import taskscheduling.util.CalcCost;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 /**
@@ -40,6 +39,35 @@ public class MAXmin {
         double maxCost = CalaCostofAll.calcCostofAll(taskList, processorsArray, beta);
         System.out.println("MAX-MIN makespan is:" + makespan + "\tmaxcost is: " + maxCost);
         CFMax.runCFMax(processorNums, processorsArray, taskList, taskNums, beta, taskEdgeHashMap,
+                maxTimeParameter, starttime, schedulerList, maxCost, makespan);
+
+
+    }
+    public static void MaxMin_CFMin(int processorNums, int taskNums, double beta, int priceModel,
+                                    String computationCostPath, String inputGraphPath, String processorInfor,
+                                    double maxTimeParameter, long starttime) throws IOException {
+
+        //the class used for initialing
+        SchedulingInit sInit = new SchedulingInit();
+        //initial task info
+        ArrayList<Task> taskList = sInit.initTaskInfor(computationCostPath, inputGraphPath);
+        //initial communication data
+        HashMap<String, Double> taskEdgeHashMap = sInit.initTaskEdge();
+
+        //initial processor info
+        Processor[] processorsArray;
+        processorsArray = sInit.initProcessorInfor(processorInfor, processorNums, priceModel);
+        HashMap<Integer, String> schedulerList;//record scheduled list（taskid，processor_frequency）
+        schedulerList = MaxMin(processorNums, taskNums, taskList, taskEdgeHashMap, processorsArray);//use max-min to get a schedule list
+        double makespan = Double.MIN_VALUE;
+        for (int i = 0; i < processorNums; i++) {
+            if (makespan < processorsArray[i].availableTime) {
+                makespan = processorsArray[i].availableTime;
+            }
+        }
+        double maxCost = CalaCostofAll.calcCostofAll(taskList, processorsArray, beta);
+        System.out.println("MAX-MIN makespan is:" + makespan + "\tmaxcost is: " + maxCost);
+        CFMin.runCFMin(processorNums, processorsArray, taskList, taskNums, beta, taskEdgeHashMap,
                 maxTimeParameter, starttime, schedulerList, maxCost, makespan);
 
 
@@ -79,7 +107,7 @@ public class MAXmin {
                     }
                 }
             }
-            double maxCompletionTime =-1;
+            double maxCompletionTime = -1;
             int minTp = -1;
             for (int taskid = 0; taskid < taskNums; taskid++) {
                 //find the task tp with earliest completion time
@@ -87,7 +115,6 @@ public class MAXmin {
                 if (!unscheduledTask[taskid] || task.predecessorTaskList.size() - completedParent[taskid] > 0) {
                     continue;
                 }
-                //System.out.println(maxCompletionTime+"\t"+ Arrays.toString(taskMinCTime));
                 if (maxCompletionTime < taskMinCTime[taskid]) {
                     maxCompletionTime = taskMinCTime[taskid];
                     minTp = taskid;

@@ -1,6 +1,7 @@
 package initialSchedulingAlgorithm;
 
 import runtest.CFMaxTest;
+import runtest.CFMinTest;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +12,7 @@ import java.io.PrintWriter;
  */
 public class NewExperiment {
     public static void main(String[] args) throws IOException {
-        int taskNums = 1000;
+        int taskNums = 100;
         double beta = 0.4;
         String dirPath = "./input/";
         String graphModelName = "Montage";
@@ -26,12 +27,21 @@ public class NewExperiment {
         PrintWriter PWcfmax = new PrintWriter(File, "utf-8");
         taskNums+=2;
         MINMIN.Minmin_CFMax(processorNum, taskNums, beta, pricelModel, computationCostPath, inputGraphPath, processorInfor, maxTimeParameter, 0);
-       MAXmin.MaxMin_CFMax(processorNum, taskNums, beta, pricelModel, computationCostPath, inputGraphPath, processorInfor, maxTimeParameter, 0);
-       MET.Met_CFMax(processorNum, taskNums, beta, pricelModel, computationCostPath, inputGraphPath, processorInfor, maxTimeParameter, 0);
-       MCT.Mct_CFMax(processorNum, taskNums, beta, pricelModel, computationCostPath, inputGraphPath, processorInfor, maxTimeParameter, 0);
+        MINMIN.Minmin_CFMin(processorNum, taskNums, beta, pricelModel, computationCostPath, inputGraphPath, processorInfor, maxTimeParameter, 0);
 
-     //   CFMaxTest.runHEFT(maxTimeParameter, processorNum, taskNums, beta, computationCostPath,
-       //       inputGraphPath, processorInfor, PWcfmax, pricelModel, 0);
+        MAXmin.MaxMin_CFMax(processorNum, taskNums, beta, pricelModel, computationCostPath, inputGraphPath, processorInfor, maxTimeParameter, 0);
+        MAXmin.MaxMin_CFMin(processorNum, taskNums, beta, pricelModel, computationCostPath, inputGraphPath, processorInfor, maxTimeParameter, 0);
+
+        MET.Met_CFMax(processorNum, taskNums, beta, pricelModel, computationCostPath, inputGraphPath, processorInfor, maxTimeParameter, 0);
+        MET.Met_CFMin(processorNum, taskNums, beta, pricelModel, computationCostPath, inputGraphPath, processorInfor, maxTimeParameter, 0);
+
+        MCT.Mct_CFMax(processorNum, taskNums, beta, pricelModel, computationCostPath, inputGraphPath, processorInfor, maxTimeParameter, 0);
+        MCT.Mct_CFMin(processorNum, taskNums, beta, pricelModel, computationCostPath, inputGraphPath, processorInfor, maxTimeParameter, 0);
+
+        CFMaxTest.runHEFT(maxTimeParameter, processorNum, taskNums, beta, computationCostPath,
+                inputGraphPath, processorInfor, PWcfmax, pricelModel, 0);
+        CFMinTest.runHEFT(maxTimeParameter, processorNum, taskNums, beta, computationCostPath,
+                inputGraphPath, processorInfor, PWcfmax, pricelModel, 0);
 
 
     }

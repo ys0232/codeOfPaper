@@ -44,6 +44,38 @@ public class MCT {
 
     }
 
+    static void Mct_CFMin(int processorNums, int taskNums, double beta, int priceModel,
+                          String computationCostPath, String inputGraphPath, String processorInfor,
+                          double maxTimeParameter, long starttime) throws IOException {
+
+        //the class used for initialing
+        SchedulingInit sInit = new SchedulingInit();
+        //initial task info
+        ArrayList<Task> taskList = sInit.initTaskInfor(computationCostPath, inputGraphPath);
+        //initial communication data
+        HashMap<String, Double> taskEdgeHashMap = sInit.initTaskEdge();
+
+        //initial processor info
+        Processor[] processorsArray;
+        processorsArray = sInit.initProcessorInfor(processorInfor, processorNums, priceModel);
+        HashMap<Integer, String> schedulerList = MCT(processorNums, taskNums, taskList, taskEdgeHashMap, processorsArray);
+
+        double makespan = Double.MIN_VALUE;
+        for (int i = 0; i < processorNums; i++) {
+            if (makespan < processorsArray[i].availableTime) {
+                makespan = processorsArray[i].availableTime;
+            }
+        }
+        double maxCost = CalaCostofAll.calcCostofAll(taskList, processorsArray, beta);
+        System.out.println(" MCT makespan is:" + makespan + "\tmaxcost is: " + maxCost);
+
+        CFMin.runCFMin(processorNums, processorsArray, taskList, taskNums, beta, taskEdgeHashMap,
+                maxTimeParameter, starttime, schedulerList, maxCost, makespan);
+
+    }
+
+
+
     public static HashMap<Integer, String> MCT(int processorNums, int taskNums, ArrayList<Task> taskList, HashMap<java.lang.String, Double> taskEdgeHashMap,
                                                Processor[] processorsArray) throws IOException {
         HashMap<Integer, String> schedulerList = new HashMap<>();
