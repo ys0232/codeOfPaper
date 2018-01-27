@@ -1,0 +1,6 @@
+min_min makespan is:	137.00	min_min cost is:	.04
+491.40	.01	min_min makespan is:	137.00	min_min cost is:	.04
+cfmin makespan is:	219.00	cfmin cost is:	.02
+165.00	.04	491.40	.01	165.00	.04	219.00	.03	491.40	.01	219.00	.03	cfmin makespan is:	219.00	cfmin cost is:	.01
+161.00	.05	491.40	.01	161.00	.05	cfmin makespan is:	219.00	cfmin cost is:	.01
+85.00	.03	491.40	.01	491.40	.01

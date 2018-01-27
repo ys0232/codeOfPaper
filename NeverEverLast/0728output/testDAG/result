@@ -1,0 +1,11 @@
+task_id 	0	1_1600	start time	0.0	end time:	15.600000000000001
+task_id 	4	1_1600	start time	55.5	end time:	71.5
+task_id 	2	2_2100	start time	28.285714285714285	end time:	34.285714285714285
+task_id 	1	1_1600	start time	15.600000000000001	end time:	42.900000000000006
+task_id 	3	1_1600	start time	42.900000000000006	end time:	50.7
+task_id 	5	1_1600	start time	71.5	end time:	79.3
+task_id 	7	0_1100	start time	97.75454545454545	end time:	102.75454545454545
+task_id 	8	1_1600	start time	80.2	end time:	83.2
+task_id 	6	2_2100	start time	34.285714285714285	end time:	42.08571428571429
+task_id 	9	1_1600	start time	124.75454545454545	end time:	127.35454545454544
+127.35454545454544	3575.7189350649355

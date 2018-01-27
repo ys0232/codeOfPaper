@@ -1,0 +1,1 @@
+95.00	.06	131.55	.04	95.00	.06	cfmin makespan is:	229.00	cfmin cost is:	.04
