@@ -18,7 +18,7 @@ public class ChangeFromMinDisCost {
 		double sumCost = CalcSumMaxCost.calcSumMaxCost(taskList);
 		double makespan = CalcMakeSpan.calcMakeSpan(taskList);
 		double maxTime = makespan * maxTimeParameter;
-		System.out.println("using HEFT��\tmakespan: " + makespan + "\tsumCost: " + sumCost);
+		System.out.println("using HEFT \tmakespan: " + makespan + "\tsumCost: " + sumCost);
 		//change from min cost
 		for(int i = taskList.size() - 1; makespan <= maxTime && i >= 0; makespan = CalcMakeSpan.calcMakeSpan(taskList), -- i){
 			if(taskDisCostList.get(i).getValue() < 1e-10){
@@ -30,6 +30,12 @@ public class ChangeFromMinDisCost {
 				break;
 			}
 		}
-		System.out.println("After chaging��\tmakespan: " + makespan + "\tsumCost: " + sumCost);
+		System.out.println("+++++++++++++++++++++++++++++++\nCFMin_HEFT SCHEDULER\n");
+		for (Integer taskid : taskOrderList) {
+			Task tp=taskList.get(taskid);
+			System.out.println("task_id \t"+taskid+"\t"+"\tstart time\t"+tp.timeGap.startTime+"\tend time:\t"+tp.timeGap.endTime);
+
+		}
+		System.out.println("After changing \tmakespan: " + makespan + "\tsumCost: " + sumCost);
 	}
 }

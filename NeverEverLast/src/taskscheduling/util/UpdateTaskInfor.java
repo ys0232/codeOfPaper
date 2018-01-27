@@ -16,7 +16,7 @@ public class UpdateTaskInfor {
 			ArrayList<Task> taskList, ArrayList<Integer> taskOrderList,
 			HashMap<String, Double> taskEdgeHashMap, Processor[] processorsArray){
 		
-		//±£´æµ±Ç°×´Ì¬ÓÃÒÔ»Ø¹ö
+		//ï¿½ï¿½ï¿½æµ±Ç°×´Ì¬ï¿½ï¿½ï¿½Ô»Ø¹ï¿½
 		Task[] oldTaskInfor = new Task[taskList.size()];
 		for(int i = 0; i < taskList.size(); ++ i){
 			oldTaskInfor[i] = new Task();
@@ -35,16 +35,16 @@ public class UpdateTaskInfor {
 //		}
 		
 		int taskId = taskDisCostList.get(ithToBeChangedTask).getKey();
-		Task task = taskList.get(taskId - 1);
+		Task task = taskList.get(taskId );
 //		double taskStartTime = task.timeGap.startTime;
 		
-		/**¸ü¸Ä²¿·Ö**/
+		/**ï¿½ï¿½ï¿½Ä²ï¿½ï¿½ï¿½**/
 //		for(Task task1 :taskList){
 //			task1.timeGap = new TimeGap();
 //		}
 		
 		double disCost = taskDisCostList.get(ithToBeChangedTask).getValue(); 
-		//µ÷»»ÈÎÎñÖ®ºó´ú¼Û»á¼õÉÙ£¬¼õÉÙµÄÁ¿¾ÍÊÇ¸ü»»Ç°ºó´¦ÀíÆ÷µÄ´ú¼Û²î
+		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö®ï¿½ï¿½ï¿½ï¿½Û»ï¿½ï¿½ï¿½Ù£ï¿½ï¿½ï¿½ï¿½Ùµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç¸ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä´ï¿½ï¿½Û²ï¿½
 		sumCost -= disCost;
 		int updateIndex = 0;
 		
@@ -62,16 +62,16 @@ public class UpdateTaskInfor {
 //			processorsArray[processorId].availableTime = Math.max(tempAvailableTime, processorsArray[processorId].availableTime);
 //		}
 			
-		//Ìø¹ýÒªµ÷»»µÄÈÎÎñÖ®Ç°µÄÈÎÎñ
+		//ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö®Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		for(; updateIndex < taskList.size(); ++ updateIndex){
 			if(taskOrderList.get(updateIndex) == taskId){
 				break;
 			}
-			Task tempTask = taskList.get(taskOrderList.get(updateIndex) - 1);
+			Task tempTask = taskList.get(taskOrderList.get(updateIndex) );
 			int processorId = tempTask.selectedProcessorId;
 			double tempAvailableTime = tempTask.timeGap.endTime;
 			processorsArray[processorId].availableTime = Math.max(tempAvailableTime, processorsArray[processorId].availableTime);
-			/**¸ü¸Ä´¦**/
+			/**ï¿½ï¿½ï¿½Ä´ï¿½**/
 //			TaskScheduling.taskScheduling(taskOrderList.get(updateIndex), taskList, taskEdgeHashMap, processorsArray);
 		
 //			System.out.println("Before task:" + "\t"
@@ -85,15 +85,15 @@ public class UpdateTaskInfor {
 		}
 		
 
-		//¸üÐÂµ±Ç°Òªµ÷»»´¦ÀíÆ÷µÄÈÎÎñ
+		//ï¿½ï¿½ï¿½Âµï¿½Ç°Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		
-		//Ñ°ÕÒ¸¸½ÚµãÈÎÎñµÄ×îÍí½áÊøÊ±¼ä
-		ArrayList<Integer> predTaskArrayList = taskList.get(taskId - 1).predecessorTaskList;
-		//¸¸½ÚµãµÄ×îÍí½áÊøÊ±¼ä
+		//Ñ°ï¿½Ò¸ï¿½ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
+		ArrayList<Integer> predTaskArrayList = taskList.get(taskId ).predecessorTaskList;
+		//ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
 		double timeThreshold = -1;
 		for(Integer predTaskId: predTaskArrayList){
 			double temp = 0;
-			Task predTask = taskList.get(predTaskId - 1);
+			Task predTask = taskList.get(predTaskId );
 			if(predTask.selectedProcessorId == task.minCostProcessorId){
 				temp = predTask.timeGap.endTime;
 			}else{
@@ -111,7 +111,7 @@ public class UpdateTaskInfor {
 		processorsArray[task.minCostProcessorId].availableTime = task.timeGap.endTime;
 		
 		++ updateIndex;
-		//±£³ÖÈÎÎñµÄ´¦ÀíÆ÷²»±ä£¬¸üÐÂÊ±¼ä
+		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ä£¬ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
 		for(; updateIndex < taskList.size(); ++ updateIndex){
 			UpdateTaskInforAfterChangeScheduling.updateTaskInfor(taskOrderList.get(updateIndex), taskList, taskEdgeHashMap, processorsArray);
 			
@@ -127,7 +127,7 @@ public class UpdateTaskInfor {
 		
 		//System.out.println(CalcMakeSpan.calcMakeSpan(taskList));
 		
-		//ÈôÊÇ×ª»»Ö®ºóµÄmakespan³¬¹ý¹æ¶¨Ê±¼äÔò»Ø¹ö
+		//ï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½Ö®ï¿½ï¿½ï¿½makespanï¿½ï¿½ï¿½ï¿½ï¿½æ¶¨Ê±ï¿½ï¿½ï¿½ï¿½Ø¹ï¿½
 //		double newMakeSpan = CalcMakeSpan.calcMakeSpan(taskList);
 //		System.out.println("newmakespan: " + newMakeSpan);
 		
@@ -152,7 +152,7 @@ public class UpdateTaskInfor {
 										 ArrayList<Task> taskList, ArrayList<Integer> taskOrderList,
 										 HashMap<String, Double> taskEdgeHashMap, Processor[] processorsArray){
 
-		//±£´æµ±Ç°×´Ì¬ÓÃÒÔ»Ø¹ö
+		//ï¿½ï¿½ï¿½æµ±Ç°×´Ì¬ï¿½ï¿½ï¿½Ô»Ø¹ï¿½
 		Task[] oldTaskInfor = new Task[taskList.size()];
 		for(int i = 0; i < taskList.size(); ++ i){
 			oldTaskInfor[i] = new Task();
@@ -174,13 +174,13 @@ public class UpdateTaskInfor {
 		Task task = taskList.get(taskId - 1);
 //		double taskStartTime = task.timeGap.startTime;
 
-		/**¸ü¸Ä²¿·Ö**/
+		/**ï¿½ï¿½ï¿½Ä²ï¿½ï¿½ï¿½**/
 //		for(Task task1 :taskList){
 //			task1.timeGap = new TimeGap();
 //		}
 
 		double disCost = taskDisCostList.get(ithToBeChangedTask).getValue();
-		//µ÷»»ÈÎÎñÖ®ºó´ú¼Û»á¼õÉÙ£¬¼õÉÙµÄÁ¿¾ÍÊÇ¸ü»»Ç°ºó´¦ÀíÆ÷µÄ´ú¼Û²î
+		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö®ï¿½ï¿½ï¿½ï¿½Û»ï¿½ï¿½ï¿½Ù£ï¿½ï¿½ï¿½ï¿½Ùµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç¸ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä´ï¿½ï¿½Û²ï¿½
 		sumCost -= disCost;
 		int updateIndex = 0;
 
@@ -198,7 +198,7 @@ public class UpdateTaskInfor {
 //			processorsArray[processorId].availableTime = Math.max(tempAvailableTime, processorsArray[processorId].availableTime);
 //		}
 
-		//Ìø¹ýÒªµ÷»»µÄÈÎÎñÖ®Ç°µÄÈÎÎñ
+		//ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö®Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		for(; updateIndex < taskList.size(); ++ updateIndex){
 			if(taskOrderList.get(updateIndex) == taskId){
 				break;
@@ -207,7 +207,7 @@ public class UpdateTaskInfor {
 			int processorId = tempTask.selectedProcessorId;
 			double tempAvailableTime = tempTask.timeGap.endTime;
 			processorsArray[processorId].availableTime = Math.max(tempAvailableTime, processorsArray[processorId].availableTime);
-			/**¸ü¸Ä´¦**/
+			/**ï¿½ï¿½ï¿½Ä´ï¿½**/
 //			TaskScheduling.taskScheduling(taskOrderList.get(updateIndex), taskList, taskEdgeHashMap, processorsArray);
 
 //			System.out.println("Before task:" + "\t"
@@ -221,11 +221,11 @@ public class UpdateTaskInfor {
 		}
 
 
-		//¸üÐÂµ±Ç°Òªµ÷»»´¦ÀíÆ÷µÄÈÎÎñ
+		//ï¿½ï¿½ï¿½Âµï¿½Ç°Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-		//Ñ°ÕÒ¸¸½ÚµãÈÎÎñµÄ×îÍí½áÊøÊ±¼ä
+		//Ñ°ï¿½Ò¸ï¿½ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
 		ArrayList<Integer> predTaskArrayList = taskList.get(taskId - 1).predecessorTaskList;
-		//¸¸½ÚµãµÄ×îÍí½áÊøÊ±¼ä
+		//ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
 		double timeThreshold = -1;
 		for(Integer predTaskId: predTaskArrayList){
 			double temp = 0;
@@ -247,7 +247,7 @@ public class UpdateTaskInfor {
 		processorsArray[task.minCostProcessorId].availableTime = task.timeGap.endTime;
 
 		++ updateIndex;
-		//±£³ÖÈÎÎñµÄ´¦ÀíÆ÷²»±ä£¬¸üÐÂÊ±¼ä
+		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ä£¬ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
 		for(; updateIndex < taskList.size(); ++ updateIndex){
 			UpdateTaskInforAfterChangeScheduling.updateTaskInfor(taskOrderList.get(updateIndex), taskList, taskEdgeHashMap, processorsArray);
 
@@ -263,7 +263,7 @@ public class UpdateTaskInfor {
 
 		//System.out.println(CalcMakeSpan.calcMakeSpan(taskList));
 
-		//ÈôÊÇ×ª»»Ö®ºóµÄmakespan³¬¹ý¹æ¶¨Ê±¼äÔò»Ø¹ö
+		//ï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½Ö®ï¿½ï¿½ï¿½makespanï¿½ï¿½ï¿½ï¿½ï¿½æ¶¨Ê±ï¿½ï¿½ï¿½ï¿½Ø¹ï¿½
 //		double newMakeSpan = CalcMakeSpan.calcMakeSpan(taskList);
 //		System.out.println("newmakespan: " + newMakeSpan);
 

@@ -107,9 +107,10 @@ public class CFMinTest {
 		
 		//*******************************************
 		//*******************************************
-		double makespan=CalcAllMakespans.calcmakespans(processorNums, taskNums, beta, priceModel, computationCostPath, inputGraphPath, processorInfor, maxTimeParameter, starttime);//makespan with ay calculations
+	//	double makespan=CalcAllMakespans.calcmakespans(processorNums, taskNums, beta, priceModel, computationCostPath, inputGraphPath, processorInfor, maxTimeParameter, starttime);//makespan with ay calculations
 		//System.out.println("Maximin Makespan: "+makespan);
-		double maxTime = makespan * maxTimeParameter;
+		//double maxTime = makespan * maxTimeParameter;
+		double maxTime = localmakespan * maxTimeParameter;
 		//System.out.println("Deadline:"+maxTime);
 		//System.out.println("Deadline: "+maxTime);
 		//*********************************************
@@ -129,7 +130,7 @@ public class CFMinTest {
 		flag = computeRW.computeMIN(RW, beta, schedulerList, cpuFreq,
 				processorsArray, taskList, processorNums, bestList, jinji,
 				CFMin,parentNum);
-		double lastTime = makespan;
+		double lastTime = localmakespan;
 		double lastSumCost = sumCost;
 		boolean t = true;
 		double tcount = 0;
@@ -287,7 +288,7 @@ public class CFMinTest {
 		String inputDAG=inputdir+"testDAG/";
 		String inputGraphPath = inputDAG +  "DAGtransfer.txt";
 
-		int priceModel=1;
+		int priceModel=2;
 		String Path = outputdir +"testDAG/" + priceModel + ".txt";
 		File File = new File(Path);
 		PrintWriter PWcfmax = new PrintWriter(File, "utf-8");
@@ -297,6 +298,8 @@ public class CFMinTest {
 		String computationCostPath = inputDAG +  "DAGruntime.txt";
 		String processorInfor =inputDAG +  "resource.txt";
 		CFMaxTest.runHEFT(maxTimeParameter, processorNums, taskNums, beta, computationCostPath, inputGraphPath, processorInfor, PWcfmax, priceModel, 0);
+
+		CFMinTest.runHEFT(maxTimeParameter, processorNums, taskNums, beta, computationCostPath, inputGraphPath, processorInfor, PWcfmax, priceModel, 0);
 
 
 

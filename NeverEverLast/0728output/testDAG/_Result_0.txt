@@ -1,0 +1,2 @@
+HEFTmakespan:	HEFTsumcost:	maxTime:	makespan:	sumcost:	MaxTimeParameter:	
+95.00	21477.00	285.00	232.20	10712.11	3.0

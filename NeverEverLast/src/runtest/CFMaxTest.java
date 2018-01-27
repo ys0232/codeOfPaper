@@ -83,9 +83,10 @@ public class CFMaxTest {
         double makespan = CalcMakeSpan.calcMakeSpan(taskList);
         
         //**Calculate the makespan for the deadline==> the maximum makespan among 5 makespan
-        double makespanforDeadline=CalcAllMakespans.calcmakespans(processorNums, taskNums, beta, priceModel, computationCostPath, inputGraphPath, processorInfor, maxTimeParameter, starttime);
+       // double makespanforDeadline=CalcAllMakespans.calcmakespans(processorNums, taskNums, beta, priceModel, computationCostPath, inputGraphPath, processorInfor, maxTimeParameter, starttime);
 
-        double maxTime = makespanforDeadline * maxTimeParameter;
+      //  double maxTime = makespanforDeadline * maxTimeParameter;
+        double maxTime = makespan * maxTimeParameter;
      //   System.out.println("HEFT schedulerList:\t"+schedulerList.toString());
         //System.out.println("Deadline:"+maxTime);
         //***********************End of deadline declaration

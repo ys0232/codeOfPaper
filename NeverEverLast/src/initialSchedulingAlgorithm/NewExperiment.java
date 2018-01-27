@@ -12,7 +12,7 @@ import java.io.PrintWriter;
  */
 public class NewExperiment {
 	public static void main(String[] args) throws IOException {
-		int taskNums = 1000;
+		int taskNums = 100;
 		double beta = 0.4;
 		String dirPath = "./input/";
 		String graphModelName = "Montage";

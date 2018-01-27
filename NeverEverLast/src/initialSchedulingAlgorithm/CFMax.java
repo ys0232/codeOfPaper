@@ -103,7 +103,7 @@ public class CFMax {
 					oldTaskInfor[i].timeGap.gap = taskList.get(i).timeGap.gap;
 				}
 
-				String[] string = newtestUpdate.testUpdate(taskList, processorsArray, tm, bestList, taskEdgeHashMap, beta,taskOrderList).split("_");
+				String[] string = newtestUpdate.newtestUpdate(taskList, processorsArray, tm, bestList, taskEdgeHashMap, beta).split("_");
 
 				sumCost = Double.valueOf(string[1].trim());
 				double time = Double.valueOf(string[0].trim());

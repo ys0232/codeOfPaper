@@ -160,7 +160,7 @@ public class SchedulingInit {
         int i = 0;
 
         while (null != line && i < processorNums) {
-
+          // System.out.println(line);
             String[] data = line.split("\t");
             processorArray[i] = new Processor();
 

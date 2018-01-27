@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import initialSchedulingAlgorithmJustmakespan.CalcAllMakespans;
 import taskscheduling.Processor;
 import taskscheduling.Task;
 import taskscheduling.TimeGap;
@@ -32,6 +33,12 @@ public class ChangeFromMaxDisCost {
 			if(Math.abs(tempCost - sumCost) < 1e-10){
 				break;
 			}
+		}
+		System.out.println("+++++++++++++++++++++++++++++++\nCFMax_HEFT SCHEDULER\n");
+		for (Integer taskid : taskOrderList) {
+			Task tp=taskList.get(taskid);
+			System.out.println("task_id \t"+taskid+"\tstart time\t"+tp.timeGap.startTime+"\tend time:\t"+tp.timeGap.endTime);
+
 		}
 		System.out.println("After changing \tmakespan: "+ makespan + "\tsumCost: " + sumCost);
 		DecimalFormat df = new DecimalFormat("#.00");
